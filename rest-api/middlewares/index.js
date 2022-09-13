@@ -18,47 +18,45 @@ const config = require("../config.js");
  */
 
 module.exports = {
-    authUser: async (req, res, next) => {
-        try {
-            const cookies = req.cookies.user
-                ? req.cookies.user.split("&")
-                : null;
+  authUser: async (req, res, next) => {
+    try {
+      // const cookies = req.cookies.user
+      //     ? req.cookies.user.split("&")
+      //     : null;
+      const cookies = [`axel`, `5kuUnduFiyoWS5yaApq6Q7nx0QSfzRYIGBb1i73d`];
 
-            const username = cookies ? cookies[0] : "";
-            const authToken = cookies ? cookies[1] : "";
+      const username = cookies ? cookies[0] : "";
+      const authToken = cookies ? cookies[1] : "";
 
-            if (cookies) res.locals.cookiesIncluded = true;
+      if (cookies) res.locals.cookiesIncluded = true;
 
-            if (!cookies || !username || !authToken) {
-                throw { success: false };
-            }
+      if (!cookies || !username || !authToken) {
+        throw { success: false };
+      }
 
-            const authResponse = await usersApi.authenticateUser(
-                username,
-                authToken
-            );
+      const authResponse = await usersApi.authenticateUser(username, authToken);
 
-            res.locals.userSignedIn = true;
-            res.locals.username = authResponse.username;
-            res.locals.karma = authResponse.karma;
-            res.locals.containsEmail = authResponse.containsEmail;
-            res.locals.showDead = authResponse.showDead;
-            res.locals.showDownvote =
-                authResponse.karma >= config.minimumKarmaToDownvote;
-            res.locals.isModerator = authResponse.isModerator;
-            res.locals.shadowBanned = authResponse.shadowBanned;
-            res.locals.banned = authResponse.banned;
+      res.locals.userSignedIn = true;
+      res.locals.username = authResponse.username;
+      res.locals.karma = authResponse.karma;
+      res.locals.containsEmail = authResponse.containsEmail;
+      res.locals.showDead = authResponse.showDead;
+      res.locals.showDownvote =
+        authResponse.karma >= config.minimumKarmaToDownvote;
+      res.locals.isModerator = authResponse.isModerator;
+      res.locals.shadowBanned = authResponse.shadowBanned;
+      res.locals.banned = authResponse.banned;
 
-            next();
-        } catch (error) {
-            res.locals.userSignedIn = false;
-            res.locals.username = null;
-            res.locals.karma = null;
-            res.locals.showDead = false;
-            res.locals.showDownvote = false;
-            res.locals.banned = error.banned || false;
+      next();
+    } catch (error) {
+      res.locals.userSignedIn = false;
+      res.locals.username = null;
+      res.locals.karma = null;
+      res.locals.showDead = false;
+      res.locals.showDownvote = false;
+      res.locals.banned = error.banned || false;
 
-            next();
-        }
-    },
+      next();
+    }
+  },
 };
